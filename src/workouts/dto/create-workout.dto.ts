@@ -42,13 +42,9 @@ export class CreateWorkoutDto {
   @IsNotEmpty()
   studentId: string;
 
-  @IsDateString()
+  @IsString()
   @IsOptional()
-  scheduledDate?: string;
-
-  @IsDateString()
-  @IsOptional()
-  expiresAt?: string;
+  trainingPlanId?: string;
 
   @IsArray()
   @ValidateNested({ each: true })

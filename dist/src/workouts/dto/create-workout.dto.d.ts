@@ -11,7 +11,6 @@ export declare class CreateWorkoutDto {
     name: string;
     description?: string;
     studentId: string;
-    scheduledDate?: string;
-    expiresAt?: string;
+    trainingPlanId?: string;
     exercises: WorkoutExerciseDto[];
 }

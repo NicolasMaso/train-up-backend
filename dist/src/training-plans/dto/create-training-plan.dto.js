@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateWorkoutDto = exports.WorkoutExerciseDto = void 0;
+exports.CreateTrainingPlanDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 class WorkoutExerciseDto {
@@ -21,10 +21,8 @@ class WorkoutExerciseDto {
     weight;
     notes;
 }
-exports.WorkoutExerciseDto = WorkoutExerciseDto;
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], WorkoutExerciseDto.prototype, "exerciseId", void 0);
 __decorate([
@@ -37,56 +35,77 @@ __decorate([
 ], WorkoutExerciseDto.prototype, "sets", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], WorkoutExerciseDto.prototype, "reps", void 0);
 __decorate([
-    (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], WorkoutExerciseDto.prototype, "restSeconds", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], WorkoutExerciseDto.prototype, "weight", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], WorkoutExerciseDto.prototype, "notes", void 0);
-class CreateWorkoutDto {
+class WorkoutDto {
     name;
     description;
-    studentId;
-    trainingPlanId;
     exercises;
 }
-exports.CreateWorkoutDto = CreateWorkoutDto;
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], CreateWorkoutDto.prototype, "name", void 0);
+], WorkoutDto.prototype, "name", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateWorkoutDto.prototype, "description", void 0);
-__decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], CreateWorkoutDto.prototype, "studentId", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], CreateWorkoutDto.prototype, "trainingPlanId", void 0);
+], WorkoutDto.prototype, "description", void 0);
 __decorate([
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),
     (0, class_transformer_1.Type)(() => WorkoutExerciseDto),
     __metadata("design:type", Array)
-], CreateWorkoutDto.prototype, "exercises", void 0);
-//# sourceMappingURL=create-workout.dto.js.map
+], WorkoutDto.prototype, "exercises", void 0);
+class CreateTrainingPlanDto {
+    name;
+    description;
+    studentId;
+    startDate;
+    endDate;
+    workouts;
+}
+exports.CreateTrainingPlanDto = CreateTrainingPlanDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTrainingPlanDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTrainingPlanDto.prototype, "description", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTrainingPlanDto.prototype, "studentId", void 0);
+__decorate([
+    (0, class_validator_1.IsDateString)(),
+    __metadata("design:type", String)
+], CreateTrainingPlanDto.prototype, "startDate", void 0);
+__decorate([
+    (0, class_validator_1.IsDateString)(),
+    __metadata("design:type", String)
+], CreateTrainingPlanDto.prototype, "endDate", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => WorkoutDto),
+    __metadata("design:type", Array)
+], CreateTrainingPlanDto.prototype, "workouts", void 0);
+//# sourceMappingURL=create-training-plan.dto.js.map

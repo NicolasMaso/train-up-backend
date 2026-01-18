@@ -130,7 +130,7 @@ let StudentsService = class StudentsService {
                     take: 3,
                 },
                 studentWorkouts: {
-                    orderBy: { scheduledDate: 'desc' },
+                    orderBy: { createdAt: 'desc' },
                     take: 5,
                 },
             },

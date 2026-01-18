@@ -64,13 +64,13 @@ export declare class StudentsController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            chest: number | null;
             evaluationDate: Date;
             weight: number;
             notes: string | null;
             studentId: string;
             height: number;
             bodyFat: number | null;
-            chest: number | null;
             waist: number | null;
             hip: number | null;
             leftArm: number | null;
@@ -90,9 +90,8 @@ export declare class StudentsController {
             createdAt: Date;
             updatedAt: Date;
             personalId: string;
-            scheduledDate: Date | null;
             studentId: string;
-            expiresAt: Date | null;
+            trainingPlanId: string | null;
             completedAt: Date | null;
         }[];
     }>;

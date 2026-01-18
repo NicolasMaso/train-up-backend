@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { StudentsModule } from './students/students.module';
 import { ExercisesModule } from './exercises/exercises.module';
 import { WorkoutsModule } from './workouts/workouts.module';
+import { TrainingPlansModule } from './training-plans/training-plans.module';
 import { AnamnesisModule } from './anamnesis/anamnesis.module';
 import { EvaluationsModule } from './evaluations/evaluations.module';
 import { FinancesModule } from './finances/finances.module';
@@ -25,6 +26,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     StudentsModule,
     ExercisesModule,
     WorkoutsModule,
+    TrainingPlansModule,
     AnamnesisModule,
     EvaluationsModule,
     FinancesModule,

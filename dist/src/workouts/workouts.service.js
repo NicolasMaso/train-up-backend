@@ -22,7 +22,7 @@ let WorkoutsService = class WorkoutsService {
         this.studentsService = studentsService;
     }
     async create(personalId, createWorkoutDto) {
-        const { name, description, studentId, scheduledDate, expiresAt, exercises } = createWorkoutDto;
+        const { name, description, studentId, trainingPlanId, exercises } = createWorkoutDto;
         await this.studentsService.verifyStudentOwnership(personalId, studentId);
         const workout = await this.prisma.workout.create({
             data: {
@@ -30,8 +30,7 @@ let WorkoutsService = class WorkoutsService {
                 description,
                 studentId,
                 personalId,
-                scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
-                expiresAt: expiresAt ? new Date(expiresAt) : null,
+                trainingPlanId,
                 exercises: {
                     create: exercises.map((ex) => ({
                         exerciseId: ex.exerciseId,
@@ -92,8 +91,11 @@ let WorkoutsService = class WorkoutsService {
                     },
                     orderBy: { order: 'asc' },
                 },
+                trainingPlan: {
+                    select: { id: true, name: true, startDate: true, endDate: true },
+                },
             },
-            orderBy: { scheduledDate: 'desc' },
+            orderBy: { createdAt: 'desc' },
         });
     }
     async findOne(id, userId, userRole) {
@@ -135,7 +137,7 @@ let WorkoutsService = class WorkoutsService {
         if (workout.personalId !== personalId) {
             throw new common_1.ForbiddenException('Access denied');
         }
-        const { name, description, scheduledDate, exercises } = updateWorkoutDto;
+        const { name, description, exercises } = updateWorkoutDto;
         if (exercises) {
             await this.prisma.workoutExercise.deleteMany({
                 where: { workoutId: id },
@@ -145,7 +147,6 @@ let WorkoutsService = class WorkoutsService {
                 data: {
                     name,
                     description,
-                    scheduledDate: scheduledDate ? new Date(scheduledDate) : undefined,
                     exercises: {
                         create: exercises.map((ex) => ({
                             exerciseId: ex.exerciseId,
@@ -173,7 +174,6 @@ let WorkoutsService = class WorkoutsService {
             data: {
                 name,
                 description,
-                scheduledDate: scheduledDate ? new Date(scheduledDate) : undefined,
             },
             include: {
                 exercises: {
@@ -221,28 +221,26 @@ let WorkoutsService = class WorkoutsService {
         const now = new Date();
         const futureDate = new Date();
         futureDate.setDate(futureDate.getDate() + daysAhead);
-        return this.prisma.workout.findMany({
+        return this.prisma.trainingPlan.findMany({
             where: {
                 personalId,
-                expiresAt: {
+                endDate: {
                     gte: now,
                     lte: futureDate,
                 },
-                completedAt: null,
             },
             include: {
                 student: {
                     select: { id: true, name: true, email: true, avatar: true },
                 },
-                exercises: {
-                    include: {
-                        exercise: {
-                            select: { id: true, name: true },
-                        },
+                workouts: {
+                    select: {
+                        id: true,
+                        name: true,
                     },
                 },
             },
-            orderBy: { expiresAt: 'asc' },
+            orderBy: { endDate: 'asc' },
         });
     }
 };

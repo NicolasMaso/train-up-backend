@@ -47,9 +47,8 @@ export declare class WorkoutsService {
         createdAt: Date;
         updatedAt: Date;
         personalId: string;
-        scheduledDate: Date | null;
         studentId: string;
-        expiresAt: Date | null;
+        trainingPlanId: string | null;
         completedAt: Date | null;
     }>;
     findAllForPersonal(personalId: string, studentId?: string): Promise<({
@@ -92,9 +91,8 @@ export declare class WorkoutsService {
         createdAt: Date;
         updatedAt: Date;
         personalId: string;
-        scheduledDate: Date | null;
         studentId: string;
-        expiresAt: Date | null;
+        trainingPlanId: string | null;
         completedAt: Date | null;
     })[]>;
     findAllForStudent(studentId: string): Promise<({
@@ -126,6 +124,12 @@ export declare class WorkoutsService {
             notes: string | null;
             workoutId: string;
         })[];
+        trainingPlan: {
+            id: string;
+            name: string;
+            startDate: Date;
+            endDate: Date;
+        } | null;
         personal: {
             id: string;
             name: string;
@@ -137,9 +141,8 @@ export declare class WorkoutsService {
         createdAt: Date;
         updatedAt: Date;
         personalId: string;
-        scheduledDate: Date | null;
         studentId: string;
-        expiresAt: Date | null;
+        trainingPlanId: string | null;
         completedAt: Date | null;
     })[]>;
     findOne(id: string, userId: string, userRole: UserRole): Promise<{
@@ -187,9 +190,8 @@ export declare class WorkoutsService {
         createdAt: Date;
         updatedAt: Date;
         personalId: string;
-        scheduledDate: Date | null;
         studentId: string;
-        expiresAt: Date | null;
+        trainingPlanId: string | null;
         completedAt: Date | null;
     }>;
     update(personalId: string, id: string, updateWorkoutDto: UpdateWorkoutDto): Promise<{
@@ -228,9 +230,8 @@ export declare class WorkoutsService {
         createdAt: Date;
         updatedAt: Date;
         personalId: string;
-        scheduledDate: Date | null;
         studentId: string;
-        expiresAt: Date | null;
+        trainingPlanId: string | null;
         completedAt: Date | null;
     }>;
     markAsCompleted(id: string, studentId: string): Promise<{
@@ -240,39 +241,24 @@ export declare class WorkoutsService {
         createdAt: Date;
         updatedAt: Date;
         personalId: string;
-        scheduledDate: Date | null;
         studentId: string;
-        expiresAt: Date | null;
+        trainingPlanId: string | null;
         completedAt: Date | null;
     }>;
     remove(personalId: string, id: string): Promise<{
         message: string;
     }>;
     getExpiring(personalId: string, daysAhead?: number): Promise<({
-        exercises: ({
-            exercise: {
-                id: string;
-                name: string;
-            };
-        } & {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            exerciseId: string;
-            order: number;
-            sets: number;
-            reps: string;
-            restSeconds: number | null;
-            weight: string | null;
-            notes: string | null;
-            workoutId: string;
-        })[];
         student: {
             id: string;
             name: string;
             email: string;
             avatar: string | null;
         };
+        workouts: {
+            id: string;
+            name: string;
+        }[];
     } & {
         id: string;
         name: string;
@@ -280,9 +266,9 @@ export declare class WorkoutsService {
         createdAt: Date;
         updatedAt: Date;
         personalId: string;
-        scheduledDate: Date | null;
         studentId: string;
-        expiresAt: Date | null;
-        completedAt: Date | null;
+        startDate: Date;
+        endDate: Date;
+        isActive: boolean;
     })[]>;
 }

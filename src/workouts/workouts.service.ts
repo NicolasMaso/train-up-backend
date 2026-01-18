@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { UserRole } from '@prisma/client';
 import { PrismaService } from '../prisma';
 import { CreateWorkoutDto, UpdateWorkoutDto } from './dto';
@@ -12,7 +16,8 @@ export class WorkoutsService {
   ) {}
 
   async create(personalId: string, createWorkoutDto: CreateWorkoutDto) {
-    const { name, description, studentId, scheduledDate, expiresAt, exercises } = createWorkoutDto;
+    const { name, description, studentId, trainingPlanId, exercises } =
+      createWorkoutDto;
 
     // Verify student belongs to personal
     await this.studentsService.verifyStudentOwnership(personalId, studentId);
@@ -24,8 +29,7 @@ export class WorkoutsService {
         description,
         studentId,
         personalId,
-        scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
-        expiresAt: expiresAt ? new Date(expiresAt) : null,
+        trainingPlanId,
         exercises: {
           create: exercises.map((ex) => ({
             exerciseId: ex.exerciseId,
@@ -90,8 +94,11 @@ export class WorkoutsService {
           },
           orderBy: { order: 'asc' },
         },
+        trainingPlan: {
+          select: { id: true, name: true, startDate: true, endDate: true },
+        },
       },
-      orderBy: { scheduledDate: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -130,7 +137,11 @@ export class WorkoutsService {
     return workout;
   }
 
-  async update(personalId: string, id: string, updateWorkoutDto: UpdateWorkoutDto) {
+  async update(
+    personalId: string,
+    id: string,
+    updateWorkoutDto: UpdateWorkoutDto,
+  ) {
     const workout = await this.prisma.workout.findUnique({
       where: { id },
     });
@@ -143,7 +154,7 @@ export class WorkoutsService {
       throw new ForbiddenException('Access denied');
     }
 
-    const { name, description, scheduledDate, exercises } = updateWorkoutDto;
+    const { name, description, exercises } = updateWorkoutDto;
 
     // If exercises are provided, replace all
     if (exercises) {
@@ -158,7 +169,6 @@ export class WorkoutsService {
         data: {
           name,
           description,
-          scheduledDate: scheduledDate ? new Date(scheduledDate) : undefined,
           exercises: {
             create: exercises.map((ex) => ({
               exerciseId: ex.exerciseId,
@@ -187,7 +197,6 @@ export class WorkoutsService {
       data: {
         name,
         description,
-        scheduledDate: scheduledDate ? new Date(scheduledDate) : undefined,
       },
       include: {
         exercises: {
@@ -241,34 +250,32 @@ export class WorkoutsService {
     return { message: 'Workout deleted successfully' };
   }
 
-  // Obter treinos prestes a expirar (próximos X dias)
+  // Obter planos de treino prestes a expirar (próximos X dias)
   async getExpiring(personalId: string, daysAhead: number = 7) {
     const now = new Date();
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + daysAhead);
 
-    return this.prisma.workout.findMany({
+    return this.prisma.trainingPlan.findMany({
       where: {
         personalId,
-        expiresAt: {
+        endDate: {
           gte: now,
           lte: futureDate,
         },
-        completedAt: null, // Apenas treinos não completados
       },
       include: {
         student: {
           select: { id: true, name: true, email: true, avatar: true },
         },
-        exercises: {
-          include: {
-            exercise: {
-              select: { id: true, name: true },
-            },
+        workouts: {
+          select: {
+            id: true,
+            name: true,
           },
         },
       },
-      orderBy: { expiresAt: 'asc' },
+      orderBy: { endDate: 'asc' },
     });
   }
 }

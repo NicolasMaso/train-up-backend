@@ -16,6 +16,7 @@ const users_module_1 = require("./users/users.module");
 const students_module_1 = require("./students/students.module");
 const exercises_module_1 = require("./exercises/exercises.module");
 const workouts_module_1 = require("./workouts/workouts.module");
+const training_plans_module_1 = require("./training-plans/training-plans.module");
 const anamnesis_module_1 = require("./anamnesis/anamnesis.module");
 const evaluations_module_1 = require("./evaluations/evaluations.module");
 const finances_module_1 = require("./finances/finances.module");
@@ -36,6 +37,7 @@ exports.AppModule = AppModule = __decorate([
             students_module_1.StudentsModule,
             exercises_module_1.ExercisesModule,
             workouts_module_1.WorkoutsModule,
+            training_plans_module_1.TrainingPlansModule,
             anamnesis_module_1.AnamnesisModule,
             evaluations_module_1.EvaluationsModule,
             finances_module_1.FinancesModule,

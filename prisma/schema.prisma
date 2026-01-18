@@ -53,6 +53,12 @@ model User {
   // Workouts created as personal
   createdWorkouts Workout[] @relation("PersonalWorkouts")
 
+  // Training plans as student
+  studentTrainingPlans TrainingPlan[] @relation("StudentTrainingPlans")
+
+  // Training plans created as personal
+  createdTrainingPlans TrainingPlan[] @relation("PersonalTrainingPlans")
+
   // Payments as student
   studentPayments Payment[] @relation("StudentPayments")
 
@@ -158,10 +164,36 @@ model Exercise {
   @@map("exercises")
 }
 
+model TrainingPlan {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+
+  studentId String
+  student   User   @relation("StudentTrainingPlans", fields: [studentId], references: [id], onDelete: Cascade)
+
+  personalId String
+  personal   User   @relation("PersonalTrainingPlans", fields: [personalId], references: [id], onDelete: Cascade)
+
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+
+  workouts Workout[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("training_plans")
+}
+
 model Workout {
   id          String  @id @default(uuid())
   name        String
   description String?
+
+  trainingPlanId String?
+  trainingPlan   TrainingPlan? @relation(fields: [trainingPlanId], references: [id], onDelete: Cascade)
 
   studentId String
   student   User   @relation("StudentWorkouts", fields: [studentId], references: [id], onDelete: Cascade)
@@ -169,9 +201,7 @@ model Workout {
   personalId String
   personal   User   @relation("PersonalWorkouts", fields: [personalId], references: [id], onDelete: Cascade)
 
-  scheduledDate DateTime?
-  completedAt   DateTime?
-  expiresAt     DateTime? // Data de expiração do treino
+  completedAt DateTime?
 
   exercises WorkoutExercise[]
   feedbacks WorkoutFeedback[]
