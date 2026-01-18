@@ -1,0 +1,267 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  PERSONAL
+  STUDENT
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+enum FeedbackStatus {
+  OPEN
+  RESOLVED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  phone     String?
+  avatar    String?
+  role      UserRole
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationship: Personal -> Students
+  personalId String?
+  personal   User?   @relation("PersonalStudents", fields: [personalId], references: [id])
+  students   User[]  @relation("PersonalStudents")
+
+  // Anamnesis
+  anamnesis Anamnesis[]
+
+  // Evaluations
+  evaluations Evaluation[]
+
+  // Workouts as student
+  studentWorkouts Workout[] @relation("StudentWorkouts")
+
+  // Workouts created as personal
+  createdWorkouts Workout[] @relation("PersonalWorkouts")
+
+  // Payments as student
+  studentPayments Payment[] @relation("StudentPayments")
+
+  // Payments received as personal
+  receivedPayments Payment[] @relation("PersonalPayments")
+
+  // Feedbacks as student
+  studentFeedbacks WorkoutFeedback[] @relation("StudentFeedbacks")
+
+  // Feedback responses as personal
+  feedbackResponses WorkoutFeedbackResponse[] @relation("PersonalFeedbackResponses")
+
+  @@map("users")
+}
+
+model Anamnesis {
+  id        String @id @default(uuid())
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  // Medical History
+  medicalConditions String?
+  medications       String?
+  allergies         String?
+  previousInjuries  String?
+  surgeries         String?
+
+  // Lifestyle
+  occupation         String?
+  sleepHours         Int?
+  stressLevel        Int? // 1-10
+  smokingHabit       Boolean @default(false)
+  alcoholConsumption String?
+
+  // Fitness Goals
+  mainGoal             String?
+  secondaryGoals       String?
+  exerciseExperience   String?
+  currentActivityLevel String?
+
+  // Diet
+  dietaryRestrictions String?
+  mealsPerDay         Int?
+  waterIntakeLiters   Float?
+
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("anamnesis")
+}
+
+model Evaluation {
+  id        String @id @default(uuid())
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  // Basic measurements
+  weight  Float // kg
+  height  Float // cm
+  bmi     Float? // calculated
+  bodyFat Float? // percentage
+
+  // Body measurements (cm)
+  chest      Float?
+  waist      Float?
+  hip        Float?
+  leftArm    Float?
+  rightArm   Float?
+  leftThigh  Float?
+  rightThigh Float?
+  leftCalf   Float?
+  rightCalf  Float?
+
+  // Additional
+  restingHeartRate Int?
+  bloodPressure    String?
+
+  notes          String?
+  evaluationDate DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("evaluations")
+}
+
+model Exercise {
+  id               String   @id @default(uuid())
+  externalId       String?  @unique // ID from external API to prevent duplicates
+  name             String
+  description      String?
+  instructions     String?  @db.Text // Detailed instructions
+  gifUrl           String? // GIF animation URL
+  videoUrl         String?
+  muscleGroup      String? // Primary target muscle
+  secondaryMuscles String? // Secondary muscles (comma-separated)
+  equipment        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  workoutExercises WorkoutExercise[]
+
+  @@map("exercises")
+}
+
+model Workout {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+
+  studentId String
+  student   User   @relation("StudentWorkouts", fields: [studentId], references: [id], onDelete: Cascade)
+
+  personalId String
+  personal   User   @relation("PersonalWorkouts", fields: [personalId], references: [id], onDelete: Cascade)
+
+  scheduledDate DateTime?
+  completedAt   DateTime?
+  expiresAt     DateTime? // Data de expiração do treino
+
+  exercises WorkoutExercise[]
+  feedbacks WorkoutFeedback[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("workouts")
+}
+
+model WorkoutExercise {
+  id String @id @default(uuid())
+
+  workoutId String
+  workout   Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  order       Int
+  sets        Int
+  reps        String // Can be "12" or "8-12" or "to failure"
+  restSeconds Int?
+  weight      String? // Can be "20kg" or "bodyweight"
+  notes       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([workoutId, exerciseId, order])
+  @@map("workout_exercises")
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  studentId String
+  student   User   @relation("StudentPayments", fields: [studentId], references: [id], onDelete: Cascade)
+
+  personalId String
+  personal   User   @relation("PersonalPayments", fields: [personalId], references: [id], onDelete: Cascade)
+
+  amount   Decimal       @db.Decimal(10, 2)
+  status   PaymentStatus @default(PENDING)
+  dueDate  DateTime
+  paidDate DateTime?
+
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payments")
+}
+
+// Feedback do aluno sobre um treino realizado
+model WorkoutFeedback {
+  id String @id @default(uuid())
+
+  workoutId String
+  workout   Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+
+  studentId String
+  student   User   @relation("StudentFeedbacks", fields: [studentId], references: [id])
+
+  message String // Mensagem do feedback do aluno
+  status  FeedbackStatus @default(OPEN)
+
+  responses WorkoutFeedbackResponse[]
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  resolvedAt DateTime?
+
+  @@map("workout_feedbacks")
+}
+
+// Respostas do Personal ao feedback
+model WorkoutFeedbackResponse {
+  id String @id @default(uuid())
+
+  feedbackId String
+  feedback   WorkoutFeedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  personalId String
+  personal   User   @relation("PersonalFeedbackResponses", fields: [personalId], references: [id])
+
+  message String
+
+  createdAt DateTime @default(now())
+
+  @@map("workout_feedback_responses")
+}

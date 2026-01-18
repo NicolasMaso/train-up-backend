@@ -1,0 +1,121 @@
+import { UserRole } from '@prisma/client';
+import { PrismaService } from '../prisma';
+import { CreateAnamnesisDto, UpdateAnamnesisDto } from './dto';
+import { StudentsService } from '../students/students.service';
+export declare class AnamnesisService {
+    private prisma;
+    private studentsService;
+    constructor(prisma: PrismaService, studentsService: StudentsService);
+    create(personalId: string, createAnamnesisDto: CreateAnamnesisDto): Promise<{
+        student: {
+            id: string;
+            name: string;
+            email: string;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        notes: string | null;
+        studentId: string;
+        medicalConditions: string | null;
+        medications: string | null;
+        allergies: string | null;
+        previousInjuries: string | null;
+        surgeries: string | null;
+        occupation: string | null;
+        sleepHours: number | null;
+        stressLevel: number | null;
+        smokingHabit: boolean;
+        alcoholConsumption: string | null;
+        mainGoal: string | null;
+        secondaryGoals: string | null;
+        exerciseExperience: string | null;
+        currentActivityLevel: string | null;
+        dietaryRestrictions: string | null;
+        mealsPerDay: number | null;
+        waterIntakeLiters: number | null;
+    }>;
+    findAllByStudent(studentId: string, userId: string, userRole: UserRole): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        notes: string | null;
+        studentId: string;
+        medicalConditions: string | null;
+        medications: string | null;
+        allergies: string | null;
+        previousInjuries: string | null;
+        surgeries: string | null;
+        occupation: string | null;
+        sleepHours: number | null;
+        stressLevel: number | null;
+        smokingHabit: boolean;
+        alcoholConsumption: string | null;
+        mainGoal: string | null;
+        secondaryGoals: string | null;
+        exerciseExperience: string | null;
+        currentActivityLevel: string | null;
+        dietaryRestrictions: string | null;
+        mealsPerDay: number | null;
+        waterIntakeLiters: number | null;
+    }[]>;
+    findOne(id: string, userId: string, userRole: UserRole): Promise<{
+        student: {
+            id: string;
+            name: string;
+            email: string;
+            personalId: string | null;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        notes: string | null;
+        studentId: string;
+        medicalConditions: string | null;
+        medications: string | null;
+        allergies: string | null;
+        previousInjuries: string | null;
+        surgeries: string | null;
+        occupation: string | null;
+        sleepHours: number | null;
+        stressLevel: number | null;
+        smokingHabit: boolean;
+        alcoholConsumption: string | null;
+        mainGoal: string | null;
+        secondaryGoals: string | null;
+        exerciseExperience: string | null;
+        currentActivityLevel: string | null;
+        dietaryRestrictions: string | null;
+        mealsPerDay: number | null;
+        waterIntakeLiters: number | null;
+    }>;
+    update(personalId: string, id: string, updateAnamnesisDto: UpdateAnamnesisDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        notes: string | null;
+        studentId: string;
+        medicalConditions: string | null;
+        medications: string | null;
+        allergies: string | null;
+        previousInjuries: string | null;
+        surgeries: string | null;
+        occupation: string | null;
+        sleepHours: number | null;
+        stressLevel: number | null;
+        smokingHabit: boolean;
+        alcoholConsumption: string | null;
+        mainGoal: string | null;
+        secondaryGoals: string | null;
+        exerciseExperience: string | null;
+        currentActivityLevel: string | null;
+        dietaryRestrictions: string | null;
+        mealsPerDay: number | null;
+        waterIntakeLiters: number | null;
+    }>;
+    remove(personalId: string, id: string): Promise<{
+        message: string;
+    }>;
+}
